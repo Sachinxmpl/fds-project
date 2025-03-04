@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { FiSend, FiMenu, FiX } from 'react-icons/fi';
+import { FiSend, FiMenu, FiX, FiPause } from 'react-icons/fi'; // Added FiPause
 import { useAuth } from '../../context/AuthContext';
 import Sidebar from './Sidebar';
 import ChatMessage from './ChatMessage';
@@ -29,19 +29,19 @@ const ChatPage: React.FC = () => {
 
     const loadConversations = async () => {
       try {
-        const convos = await chatService.getConversations(); // Returns { chats: [{ id, title, createdAt, updatedAt }, ...] }
+        const convos = await chatService.getConversations();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const mappedConvos: Conversation[] = convos.map((c: any) => ({
           id: c.id,
           title: c.title,
-          messages: [], // Messages loaded separately when selected
+          messages: [],
           createdAt: new Date(c.createdAt).getTime(),
           updatedAt: new Date(c.updatedAt).getTime(),
         }));
         setConversations(mappedConvos);
         if (mappedConvos.length > 0) {
           setActiveConversation(mappedConvos[0].id);
-          const convo = await chatService.getConversation(mappedConvos[0].id); // Returns { chat: { id, title, messages, createdAt, updatedAt } }
+          const convo = await chatService.getConversation(mappedConvos[0].id);
           setMessages(mapMessages(convo.messages));
         } else {
           handleNewConversation();
@@ -52,17 +52,16 @@ const ChatPage: React.FC = () => {
     };
 
     loadConversations();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, navigate]);
 
-  // Function to map backend Message to frontend Message type
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mapMessages = (backendMessages: any[]): Message[] => {
     return backendMessages.map((m) => ({
       id: m.id,
       content: m.content,
-      timestamp: new Date(m.createdAt).getTime(), // Convert backend createdAt to timestamp
-      sender: m.isUser ? 'user' : 'ai', // Map isUser to sender
+      timestamp: new Date(m.createdAt).getTime(),
+      sender: m.isUser ? 'user' : 'ai',
     }));
   };
 
@@ -76,7 +75,7 @@ const ChatPage: React.FC = () => {
 
   const handleNewConversation = async () => {
     try {
-      const newConvo = await chatService.createConversation(); // Returns { chat: { id, title, createdAt, updatedAt } }
+      const newConvo = await chatService.createConversation();
       const mappedConvo: Conversation = {
         id: newConvo.id,
         title: newConvo.title,
@@ -100,9 +99,9 @@ const ChatPage: React.FC = () => {
     if (id === activeConversation) return;
 
     try {
-      const convo = await chatService.getConversation(id); // Returns { chat: { id, title, messages, createdAt, updatedAt } }
+      const convo = await chatService.getConversation(id);
       setActiveConversation(id);
-      setMessages(mapMessages(convo.messages)); // Map messages to frontend format
+      setMessages(mapMessages(convo.messages));
       setSidebarOpen(false);
     } catch (error) {
       console.error('Failed to load conversation:', error);
@@ -114,7 +113,7 @@ const ChatPage: React.FC = () => {
     if (!input.trim() || !activeConversation || isSending) return;
 
     const userMessage: Message = {
-      id: Date.now().toString(), // Temporary ID, replaced by backend response
+      id: Date.now().toString(),
       content: input.trim(),
       timestamp: Date.now(),
       sender: 'user',
@@ -125,7 +124,7 @@ const ChatPage: React.FC = () => {
     setIsSending(true);
 
     try {
-      const response = await chatService.sendMessage(activeConversation, userMessage.content); // Returns { userMessage, modelMessage }
+      const response = await chatService.sendMessage(activeConversation, userMessage.content);
       const aiMessage: Message = {
         id: response.id,
         content: response.content,
@@ -134,7 +133,6 @@ const ChatPage: React.FC = () => {
       };
       setMessages([...messages, userMessage, aiMessage]);
 
-      // Update conversation in state with new messages
       const updatedConvos = conversations.map((c) =>
         c.id === activeConversation
           ? { ...c, messages: [...c.messages, userMessage, aiMessage] }
@@ -262,8 +260,13 @@ const ChatPage: React.FC = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input area */}
+          {/* Loading indicator and Input area */}
           <div className="border-t border-gray-700 px-4 py-4">
+            {isSending && (
+              <div className="flex justify-center mb-2">
+                <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            )}
             <form onSubmit={handleSendMessage} className="flex">
               <div className="flex-1 min-w-0">
                 <textarea
@@ -285,7 +288,7 @@ const ChatPage: React.FC = () => {
                     : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
                 }`}
               >
-                {isSending ? 'Sending...' : <FiSend />}
+                {isSending ? <FiPause className="h-5 w-5" /> : <FiSend className="h-5 w-5" />}
               </button>
             </form>
           </div>

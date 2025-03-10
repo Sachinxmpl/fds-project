@@ -129,12 +129,13 @@ MODEL_PATH = "../../lenisha.pkl"
 try:
     with open(MODEL_PATH, "rb") as f:
         data = pickle.load(f)
-        print("Loaded data type:", type(data))
-        print("Loaded data keys:", data.keys())
+        # Move debug prints to stderr
+        print("Loaded data type: " + str(type(data)), file=sys.stderr)
+        print("Loaded data keys: " + str(data.keys()), file=sys.stderr)
         model = data["model"]
-        if isinstance(model, dict):  # Check if model is a dict
-            model = model["model"]  # Extract nested model
-        print("Model type:", type(model))
+        if isinstance(model, dict):
+            model = model["model"]
+        print("Model type: " + str(type(model)), file=sys.stderr)
         chars = data["chars"]
     model.to(device)
     model.eval()

@@ -8,20 +8,17 @@ const router = Router();
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "secre";
 
-// Register
 router.post(
   "/register",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, username, password } = req.body;
 
-      // Validate input
       if (!email || !username || !password) {
         res.status(400).json({ message: "All fields are required" });
         return;
       }
 
-      // Check if user already exists
       const existingUser = await prisma.user.findFirst({
         where: {
           OR: [{ email }, { username }],
@@ -33,10 +30,8 @@ router.post(
         return;
       }
 
-      // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Create user
       const newUser = await prisma.user.create({
         data: {
           email,
@@ -48,19 +43,16 @@ router.post(
         },
       });
 
-      // Generate token
       const token = jwt.sign({ userId: newUser.id }, JWT_SECRET, {
         expiresIn: "7d",
       });
 
-      // Set cookie
       res.cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      // Return user data (without password)
       const { password: _, ...userData } = newUser;
       res.status(201).json({
         message: "User registered successfully",
@@ -73,21 +65,18 @@ router.post(
   }
 );
 
-// Login
 router.post(
   "/login",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, password } = req.body;
 
-      // Validate input
       if (!email || !password) {
         res.status(400).json({ message: "Email and password are required" });
 
         return;
       }
 
-      // Find user
       const user = await prisma.user.findUnique({
         where: { email },
       });
@@ -97,7 +86,6 @@ router.post(
         return;
       }
 
-      // Verify password
       const isPasswordValid = await bcrypt.compare(password, user.password);
 
       if (!isPasswordValid) {
@@ -105,19 +93,16 @@ router.post(
         return;
       }
 
-      // Generate token
       const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
         expiresIn: "7d",
       });
 
-      // Set cookie
       res.cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      // Return user data (without password)
       const { password: _, ...userData } = user;
       res.status(200).json({
         message: "Login successful",
@@ -130,13 +115,11 @@ router.post(
   }
 );
 
-// Logout
 router.post("/logout", (req, res) => {
   res.clearCookie("token");
   res.status(200).json({ message: "Logged out successfully" });
 });
 
-// Check authentication
 router.get("/verify", async (req, res, next) => {
   try {
     const token =
@@ -158,7 +141,6 @@ router.get("/verify", async (req, res, next) => {
       return;
     }
 
-    // Return user data (without password)
     const { password: _, ...userData } = user;
     res.status(200).json({
       authenticated: true,

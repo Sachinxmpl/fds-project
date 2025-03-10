@@ -17,8 +17,7 @@ const client_1 = require("@prisma/client");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const router = (0, express_1.Router)();
 const prisma = new client_1.PrismaClient();
-// Get user profile
-router.get('/profile', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/profile", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
@@ -30,11 +29,11 @@ router.get('/profile', (req, res, next) => __awaiter(void 0, void 0, void 0, fun
                 username: true,
                 avatar: true,
                 createdAt: true,
-                updatedAt: true
-            }
+                updatedAt: true,
+            },
         });
         if (!user) {
-            res.status(404).json({ message: 'User not found' });
+            res.status(404).json({ message: "User not found" });
             return;
         }
         res.status(200).json({ user });
@@ -43,8 +42,7 @@ router.get('/profile', (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         next(error);
     }
 }));
-// Update user profile
-router.put('/profile', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.put("/profile", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
@@ -54,11 +52,9 @@ router.put('/profile', (req, res, next) => __awaiter(void 0, void 0, void 0, fun
             updateData.username = username;
         if (email)
             updateData.email = email;
-        // If password is provided, hash it
         if (password) {
             updateData.password = yield bcrypt_1.default.hash(password, 10);
         }
-        // If username is updated, update avatar
         if (username) {
             updateData.avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random`;
         }
@@ -71,12 +67,12 @@ router.put('/profile', (req, res, next) => __awaiter(void 0, void 0, void 0, fun
                 username: true,
                 avatar: true,
                 createdAt: true,
-                updatedAt: true
-            }
+                updatedAt: true,
+            },
         });
         res.status(200).json({
-            message: 'Profile updated successfully',
-            user: updatedUser
+            message: "Profile updated successfully",
+            user: updatedUser,
         });
     }
     catch (error) {

@@ -6,7 +6,6 @@ import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import ChatPage from './components/Chat/ChatPage';
 
-// Protected route wrapper
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
 

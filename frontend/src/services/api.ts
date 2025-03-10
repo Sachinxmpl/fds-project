@@ -10,7 +10,7 @@ const api = axios.create({
   },
 });
 
-//interceptor to attach token to every request 
+//interceptor for attaching tokens to requests
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("authToken");
   if (token) {

@@ -260,38 +260,37 @@ const ChatPage: React.FC = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Loading indicator and Input area */}
-          <div className="border-t border-gray-700 px-4 py-4">
-            {isSending && (
-              <div className="flex justify-center mb-2">
-                <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            )}
-            <form onSubmit={handleSendMessage} className="flex">
-              <div className="flex-1 min-w-0">
-                <textarea
-                  ref={inputRef}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Type your message..."
-                  rows={1}
-                  className="block w-full pl-3 pr-10 py-2 resize-none border rounded-md border-gray-600 bg-gray-700 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={!input.trim() || isSending}
-                className={`ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
-                  !input.trim() || isSending
-                    ? 'bg-gray-600 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
-                }`}
-              >
-                {isSending ? <FiPause className="h-5 w-5" /> : <FiSend className="h-5 w-5" />}
-              </button>
-            </form>
-          </div>
+          <div className="border-t border-gray-700 px-6 py-6">
+  {isSending && (
+    <div className="flex justify-center mb-4">
+      <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  )}
+  <form onSubmit={handleSendMessage} className="flex items-center">
+    <div className="flex-1 min-w-0">
+      <textarea
+        ref={inputRef}
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder="Type your message..."
+        rows={2}
+        className="block w-full pl-4 pr-12 py-2 resize-none border rounded-md border-gray-600 bg-gray-700 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-base"
+      />
+    </div>
+    <button
+      type="submit"
+      disabled={!input.trim() || isSending}
+      className={`ml-4 inline-flex items-center px-5 py-2.5 border border-transparent text-base font-medium rounded-md shadow-sm text-white ${
+        !input.trim() || isSending
+          ? 'bg-gray-600 cursor-not-allowed'
+          : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
+      }`}
+    >
+      {isSending ? <FiPause className="h-6 w-6" /> : <FiSend className="h-6 w-6" />} 
+    </button>
+  </form>
+</div>
         </div>
       </div>
     </div>

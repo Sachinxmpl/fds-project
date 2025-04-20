@@ -5,7 +5,6 @@ import torch.nn as nn
 from torch.nn import functional as F
 import pickle
 
-# Hyperparameters from gpt.ipynb
 n_embd = 384
 n_head = 8
 dropout = 0.2
